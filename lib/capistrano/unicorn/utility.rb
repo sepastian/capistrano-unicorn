@@ -55,7 +55,7 @@ module CapistranoUnicorn
     # Check if a remote process exists using its pid file
     #
     def remote_process_exists?(pid_file)
-      "[ -e #{pid_file} ] && #{try_unicorn_user} kill -0 `cat #{pid_file}` > /dev/null 2>&1"
+      "[ -e #{pid_file} ] && #{unicorn_send_signal(0, get_unicorn_pid(pid_file))} > /dev/null 2>&1"
     end
 
     # Stale Unicorn process pid file
@@ -91,7 +91,8 @@ module CapistranoUnicorn
     # Send a signal to a unicorn master processes
     #
     def unicorn_send_signal(signal, pid=get_unicorn_pid)
-      "#{try_unicorn_user} kill -s #{signal} #{pid}"
+      sig_prefix = Integer === signal ? '-' : '-s '
+      "#{try_unicorn_user} kill #{sig_prefix}#{signal} #{pid}"
     end
 
     # Run a command as the :unicorn_user user if :unicorn_user is a string.
