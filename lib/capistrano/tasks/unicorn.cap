@@ -11,22 +11,22 @@ namespace :load do
     # Environments
     set :unicorn_env     , Proc.new{ fetch(:rails_env, 'production') }
     # Following recommendations from http://unicorn.bogomips.org/unicorn_1.html
-    set :unicorn_rack_env, Proc.new{ fetch(:rails_env) == 'development' ? 'development' : 'deployment' }
-    
+    set :unicorn_rack_env, Proc.new{ fetch(:rails_env) || 'deployment' }
+
     # Execution
     set :unicorn_user              , nil
     set :unicorn_bundle            , Proc.new{ fetch(:bundle_cmd, "bundle") }
     set :unicorn_bin               , "unicorn"
     set :unicorn_options           , ''
     set :unicorn_restart_sleep_time, 2
-    
+
     # Relative paths
     set :app_subdir                        , ''
     set :unicorn_config_rel_path           , "config"
     set :unicorn_config_filename           , "unicorn.rb"
     set :unicorn_config_rel_file_path      , Proc.new{ File.join(fetch(:unicorn_config_rel_path), fetch(:unicorn_config_filename)) }
     set :unicorn_config_stage_rel_file_path, Proc.new{ File.join(fetch(:unicorn_config_rel_path), 'unicorn', "#{fetch(:unicorn_env)}.rb") }
-    
+
     # Absolute paths
     # If you find the following confusing, try running 'cap unicorn:show_vars' -
     # it might help :-)
@@ -65,7 +65,7 @@ namespace :unicorn do
         unicorn_bin        #{fetch :unicorn_bin}
         unicorn_options    #{fetch :unicorn_options}
         unicorn_restart_sleep_time  #{fetch :unicorn_restart_sleep_time}
-  
+
         # Relative paths
         app_subdir                         #{fetch :app_subdir}
         unicorn_config_rel_path            #{fetch :unicorn_config_rel_path}
@@ -87,25 +87,25 @@ namespace :unicorn do
   desc 'Start Unicorn master process'
   task :start do
     on roles unicorn_roles, :except => {:no_release => true} do
-      
+
       execute start_unicorn
     end
   end
-  
+
   desc 'Stop Unicorn'
   task :stop do
     on roles unicorn_roles, :except => {:no_release => true} do
       execute kill_unicorn('QUIT')
     end
   end
-  
+
   desc 'Immediately shutdown Unicorn'
   task :shutdown do
     on roles unicorn_roles, :except => {:no_release => true} do
       execute kill_unicorn('TERM')
     end
   end
-  
+
   desc 'Restart Unicorn'
   task :restart do
     on roles unicorn_roles, :except => {:no_release => true} do
@@ -121,7 +121,7 @@ namespace :unicorn do
       execute duplicate_unicorn()
     end
   end
-  
+
   desc 'Reload Unicorn'
   task :reload do
     on roles unicorn_roles, :except => {:no_release => true} do
