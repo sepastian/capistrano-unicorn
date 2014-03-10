@@ -40,7 +40,7 @@ module CapistranoUnicorn
     # Check if a remote process exists using its pid file
     #
     def remote_process_exists?(pid_file)
-      test("[ -e #{pid_file} ]") && execute("#{try_unicorn_user} kill -0 `cat #{pid_file}` > /dev/null 2>&1")
+      test("[ -e #{pid_file} ]") && test("#{try_unicorn_user} kill -0 `cat #{pid_file}` > /dev/null 2>&1")
     end
 
     # Stale Unicorn process pid file
