@@ -76,9 +76,7 @@ module CapistranoUnicorn
     # Get unicorn master (old) process PID
     #
     def get_old_unicorn_pid
-      within fetch(:app_path) do
-        get_unicorn_pid(old_unicorn_pid)
-      end
+      get_unicorn_pid(old_unicorn_pid)
     end
 
     # Send a signal to a unicorn master processes
