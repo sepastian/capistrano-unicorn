@@ -51,7 +51,7 @@ end
 namespace :unicorn do
   desc 'Debug Unicorn variables'
   task :show_vars do
-    on roles :app do
+    on roles(:app) do
       puts <<-EOF.gsub(/^ +/, '')
         # Environments
         rails_env          #{fetch :rails_env}
@@ -85,28 +85,28 @@ namespace :unicorn do
 
   desc 'Start Unicorn master process'
   task :start do
-    on roles unicorn_roles, reject: lambda { |h| h.properties.no_release } do
+    on roles(unicorn_roles), reject: lambda { |h| h.properties.no_release } do
       execute start_unicorn
     end
   end
 
   desc 'Stop Unicorn'
   task :stop do
-    on roles unicorn_roles, reject: lambda { |h| h.properties.no_release } do
+    on roles(unicorn_roles), reject: lambda { |h| h.properties.no_release } do
       execute kill_unicorn('QUIT')
     end
   end
 
   desc 'Immediately shutdown Unicorn'
   task :shutdown do
-    on roles unicorn_roles, reject: lambda { |h| h.properties.no_release } do
+    on roles(unicorn_roles), reject: lambda { |h| h.properties.no_release } do
       execute kill_unicorn('TERM')
     end
   end
 
   desc 'Restart Unicorn'
   task :restart do
-    on roles unicorn_roles, reject: lambda { |h| h.properties.no_release } do
+    on roles(unicorn_roles), reject: lambda { |h| h.properties.no_release } do
       duplicate_unicorn
       execute :sleep, fetch(:unicorn_restart_sleep_time)
 
@@ -118,14 +118,14 @@ namespace :unicorn do
 
   desc 'Duplicate Unicorn'
   task :duplicate do
-    on roles unicorn_roles, reject: lambda { |h| h.properties.no_release } do
+    on roles(unicorn_roles), reject: lambda { |h| h.properties.no_release } do
       duplicate_unicorn
     end
   end
 
   desc 'Reload Unicorn'
   task :reload do
-    on roles unicorn_roles, reject: lambda { |h| h.properties.no_release } do
+    on roles(unicorn_roles), reject: lambda { |h| h.properties.no_release } do
       if unicorn_is_running?
         unicorn_send_signal('HUP')
       else
@@ -136,7 +136,7 @@ namespace :unicorn do
 
   desc 'Add a new worker'
   task :add_worker do
-    on roles unicorn_roles, reject: lambda { |h| h.properties.no_release } do
+    on roles(unicorn_roles), reject: lambda { |h| h.properties.no_release } do
       if unicorn_is_running?
         unicorn_send_signal('TTIN')
       end
@@ -145,7 +145,7 @@ namespace :unicorn do
 
   desc 'Remove amount of workers'
   task :remove_worker do
-    on roles unicorn_roles, reject: lambda { |h| h.properties.no_release } do
+    on roles(unicorn_roles), reject: lambda { |h| h.properties.no_release } do
       if unicorn_is_running?
         unicorn_send_signal('TTOU')
       end
